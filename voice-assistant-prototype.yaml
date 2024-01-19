@@ -1,28 +1,28 @@
 substitutions:
   # Phases of the Voice Assistant
-  # IDLE : The voice assistant is ready to be triggered by a wake word
+  # IDLE: The voice assistant is ready to be triggered by a wake-word
   voice_assist_idle_phase_id: '1'
   # LISTENING: The voice assistant is ready to listen to a voice command (after being triggered by the wake word)
   voice_assist_listening_phase_id: '2'
-  # The voice assistant is currently processing the command
+  # THINKING: The voice assistant is currently processing the command
   voice_assist_thinking_phase_id: '3'
-  # The voice assistant is replying to the command
+  # REPLYING: The voice assistant is replying to the command
   voice_assist_replying_phase_id: '4'
-  # The voice assistant is not ready 
+  # NOT_READY: The voice assistant is not ready 
   voice_assist_not_ready_phase_id: '10'
-  # The voice assistant encountered an error
+  # ERROR: The voice assistant encountered an error
   voice_assist_error_phase_id: '11'  
-  # The voice assistant is muted and will not reply to a wake word
+  # MUTED: The voice assistant is muted and will not reply to a wake-word
   voice_assist_muted_phase_id: '12'
 
 
 globals:
-  # Global initialisation variable. Initialized to true and set to fasle once everything is connected. ONly used to have a smooth "plugging" experience
+  # Global initialisation variable. Initialized to true and set to false once everything is connected. Only used to have a smooth "plugging" experience
   - id: init_in_progress
     type: bool
     restore_value: no
     initial_value: 'true'
-  # Global variable tracking the pahse of the voice assistant (defined above). Initialized to not_ready
+  # Global variable tracking the phase of the voice assistant (defined above). Initialized to not_ready
   - id: voice_assistant_phase
     type: int
     restore_value: no
@@ -59,9 +59,9 @@ light:
 
 
 script:
-  # Master script controling the LED, based on differente conditions : initialisation in progress, wifi and api connceted and voice assistant phase.
-  # For the sake of cimplicity and re-usability, the script calls child sripts defined below.
-  # This script will be called everytime one of these conditions is changing.
+  # Master script controlling the LED, based on different conditions: initialization in progress, wifi and API connected, and the current voice assistant phase.
+  # For the sake of simplicity and re-usability, the script calls child scripts defined below.
+  # This script will be called every time one of these conditions is changing.
   - id: control_led
     then:
       - if:
@@ -138,7 +138,7 @@ script:
           effect: "none"
 
 
-  # Script executed when the voice assistant is listenintg to a command: In this example: Turn the LED in blue with a slow pulse 🔵
+  # Script executed when the voice assistant is listening to a command: In this example: Turn the LED in blue with a slow pulse 🔵
   - id: control_led_voice_assist_listening_phase
     then:
       - light.turn_on:
@@ -149,7 +149,7 @@ script:
           effect: "Slow Pulse"
 
 
-  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in blue with a fast pulse 🔵         
+  # Script executed when the voice assistant is processing the command: In this example: Turn the LED in blue with a fast pulse 🔵         
   - id: control_led_voice_assist_thinking_phase
     then:
       - light.turn_on:
@@ -160,7 +160,7 @@ script:
           effect: "Fast Pulse"
 
 
-  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in blue, solid (no pulse) 🔵         
+  # Script executed when the voice assistant is replying to a command: In this example: Turn the LED in blue, solid (no pulse) 🔵         
   - id: control_led_voice_assist_replying_phase
     then:
       - light.turn_on:
@@ -172,7 +172,7 @@ script:
           effect: "none"
 
 
-  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in red, solid (no pulse) 🔴        
+  # Script executed when the voice assistant encounters an error: In this example: Turn the LED in red, solid (no pulse) 🔴        
   - id: control_led_voice_assist_error_phase
     then:
       - light.turn_on:
@@ -201,13 +201,13 @@ script:
 esphome:
   name: voice-assistant-prototype
   friendly_name: Voice Assistant Prototype
-  # Automation to perform everytime the device boots 
+  # Automation to perform every time the device boots 
   on_boot:
       priority: 600
       then: 
         # Run the script to refresh the LED status
         - script.execute: control_led
-        # If after 30 second, the device is still initializing (It did not yet connect to Home Assistant), turn off the init_in_progress variable and run the script to refresh the LED status
+        # If after 30 seconds, the device is still initializing (It did not yet connect to Home Assistant), turn off the init_in_progress variable and run the script to refresh the LED status
         - delay: 30s
         - if:
             condition:
@@ -260,8 +260,8 @@ wifi:
 
 
 # This is how to include the Espressif Audio Development Framework. 
-# This is needed to be able to use VAD (Voice audio detection) and prevent the voice assistant to be constantly streaming audio to Home Assistant
-# For now, this component is not documented, nor on the code base of ESPHome, hence the refernece to the external component.
+# This is needed to be able to use VAD (Voice audio detection) and prevent the voice assistant from being constantly streaming audio to Home Assistant
+# For now, this component is not documented, nor on the code base of ESPHome, hence the reference to the external component.
 esp_adf:    
 external_components:
   - source: github://pr#5230
@@ -310,7 +310,7 @@ switch:
 
 
 # This is our two i2s buses with the correct pins. 
-# You can refer to the wirrinng diagram of our voice assistant for more details 
+# You can refer to the wirinng diagram of our voice assistant for more details 
 i2s_audio:
   - id: i2s_in
     i2s_lrclk_pin: GPIO25
@@ -321,7 +321,7 @@ i2s_audio:
 
 
 # This is the declaration of our microphone. 
-# It includes the data pin (You can refer to the wirrinng diagram of our voice assistant for more details)
+# It includes the data pin (You can refer to the wiring diagram of our voice assistant for more details)
 # It references the correct i2s bus declared above.
 microphone:
   platform: i2s_audio
@@ -332,7 +332,7 @@ microphone:
   pdm: false
 
 # This is the declaration of our speaker. 
-# It includes the data pin (You can refer to the wirrinng diagram of our voice assistant for more details)
+# It includes the data pin (You can refer to the wiring diagram of our voice assistant for more details)
 # It references the correct i2s bus declared above.
 speaker:
   platform: i2s_audio
@@ -349,6 +349,7 @@ voice_assistant:
   microphone: external_microphone
   speaker: external_speaker
   use_wake_word: true
+  
   # This is how I personally tune my voice assistant, you may have to test a few values for the 4 parameters above
   noise_suppression_level: 4
   auto_gain: 31dBFS
@@ -399,9 +400,9 @@ voice_assistant:
     - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
     - script.execute: control_led
 
-  # When the voice assistant encounter an error: 
+  # When the voice assistant encounters an error: 
   # Set the error phase and run the script to refresh the LED status
-  # Wait 1 second and set the correct phase (idle or muted depending of the state of the switch) and run the script to refresh the LED status 
+  # Wait 1 second and set the correct phase (idle or muted depending on the state of the switch) and run the script to refresh the LED status 
   on_error:
     - if:
         condition:
