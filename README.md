@@ -16,8 +16,19 @@ The voice assistant created during the live stream uses the following components
 # The device
 
 The device we created looks like this:
+![Device picture](device.png?raw=true "Device Picture")
 
 # Wirring
 
-Here is a detailed view of how we wirred the parts
-![Wirring Diagram](wirring.png?raw=true "Wirring Diagram")
+Here is a detailed view of how we wired the parts:
+![Wiring Diagram](wirring.png?raw=true "Wiring Diagram")
+
+# YAML ESPHome Firmware
+
+Here is [the complete YAML Firmware with explanation comments](voice-assistant-prototype.yaml) of what we created together during the stream.
+
+You are free to copy, adapt, and use it however you want.
+
+Have fun building and learning!
+
+JLo
