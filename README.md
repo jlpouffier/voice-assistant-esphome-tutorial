@@ -18,7 +18,7 @@ The voice assistant created during the live stream uses the following components
 The device we created looks like this:
 ![Device picture](device.png?raw=true "Device Picture")
 
-# Wirring
+# Wiring
 
 Here is a detailed view of how we wired the parts:
 ![Wiring Diagram](wirring.png?raw=true "Wiring Diagram")
